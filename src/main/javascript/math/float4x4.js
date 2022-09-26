@@ -1,0 +1,267 @@
+/**
+ * A 4x4 matrix used as a 3D transformation
+ *
+ * @class Float4x4
+ * @extends FloatNxN
+ */
+export let Float4x4 = function () {
+    let dim = 4;
+    let _ = FloatNxN (dim);
+
+    /**
+     *
+     * @param from
+     * @param to
+     * @return {*}
+     */
+    _.inverse = function (from, to) {
+        // adapted from a bit of obfuscated, unwound, code
+        to = DEFAULT_FUNCTION(to, _.create);
+        let A = from[0] * from[5] - from[1] * from[4], B = from[0] * from[6] - from[2] * from[4],
+            C = from[9] * from[14] - from[10] * from[13], D = from[9] * from[15] - from[11] * from[13],
+            E = from[10] * from[15] - from[11] * from[14], F = from[0] * from[7] - from[3] * from[4],
+            G = from[1] * from[6] - from[2] * from[5], H = from[1] * from[7] - from[3] * from[5],
+            K = from[2] * from[7] - from[3] * from[6], L = from[8] * from[13] - from[9] * from[12],
+            M = from[8] * from[14] - from[10] * from[12], N = from[8] * from[15] - from[11] * from[12],
+            Q = 1 / (A * E - B * D + F * C + G * N - H * M + K * L);
+        to[0] = (from[5] * E - from[6] * D + from[7] * C) * Q;
+        to[1] = (-from[1] * E + from[2] * D - from[3] * C) * Q;
+        to[2] = (from[13] * K - from[14] * H + from[15] * G) * Q;
+        to[3] = (-from[9] * K + from[10] * H - from[11] * G) * Q;
+        to[4] = (-from[4] * E + from[6] * N - from[7] * M) * Q;
+        to[5] = (from[0] * E - from[2] * N + from[3] * M) * Q;
+        to[6] = (-from[12] * K + from[14] * F - from[15] * B) * Q;
+        to[7] = (from[8] * K - from[10] * F + from[11] * B) * Q;
+        to[8] = (from[4] * D - from[5] * N + from[7] * L) * Q;
+        to[9] = (-from[0] * D + from[1] * N - from[3] * L) * Q;
+        to[10] = (from[12] * H - from[13] * F + from[15] * A) * Q;
+        to[11] = (-from[8] * H + from[9] * F - from[11] * A) * Q;
+        to[12] = (-from[4] * C + from[5] * M - from[6] * L) * Q;
+        to[13] = (from[0] * C - from[1] * M + from[2] * L) * Q;
+        to[14] = (-from[12] * G + from[13] * B - from[14] * A) * Q;
+        to[15] = (from[8] * G - from[9] * B + from[10] * A) * Q;
+        return to;
+    };
+
+    /**
+     *
+     * @param f4
+     * @param f4x4
+     * @param to
+     * @return {*}
+     */
+    _.preMultiply = function (f4, f4x4, to) {
+        to = DEFAULT_FUNCTION(to, Float4.create);
+        let f40 = f4[0], f41 = f4[1], f42 = f4[2], f43 = f4[3];
+        to[0] = (f4x4[0] * f40) + (f4x4[4] * f41) + (f4x4[8] * f42) + (f4x4[12] * f43);
+        to[1] = (f4x4[1] * f40) + (f4x4[5] * f41) + (f4x4[9] * f42) + (f4x4[13] * f43);
+        to[2] = (f4x4[2] * f40) + (f4x4[6] * f41) + (f4x4[10] * f42) + (f4x4[14] * f43);
+        to[3] = (f4x4[3] * f40) + (f4x4[7] * f41) + (f4x4[11] * f42) + (f4x4[15] * f43);
+        return to;
+    };
+
+    /**
+     *
+     * @param f4x4
+     * @param f4
+     * @param to
+     * @return {*}
+     */
+    _.postMultiply = function (f4x4, f4, to) {
+        to = DEFAULT_FUNCTION(to, Float4.create);
+        let f40 = f4[0], f41 = f4[1], f42 = f4[2], f43 = f4[3];
+        to[0] = (f4x4[0] * f40) + (f4x4[1] * f41) + (f4x4[2] * f42) + (f4x4[3] * f43);
+        to[1] = (f4x4[4] * f40) + (f4x4[5] * f41) + (f4x4[6] * f42) + (f4x4[7] * f43);
+        to[2] = (f4x4[8] * f40) + (f4x4[9] * f41) + (f4x4[10] * f42) + (f4x4[11] * f43);
+        to[3] = (f4x4[12] * f40) + (f4x4[13] * f41) + (f4x4[14] * f42) + (f4x4[15] * f43);
+        return to;
+    };
+
+    /**
+     *
+     * @param angle
+     */
+    _.rotateX = function (angle) {
+        let to = _.identity ();
+        to[5] = to[10] = Math.cos (angle);
+        to[9] = -(to[6] = Math.sin (angle));
+        return to;
+    };
+
+    /**
+     *
+     * @param angle
+     */
+    _.rotateY = function (angle) {
+        let to = _.identity ();
+        to[0] = to[10] = Math.cos (angle);
+        to[2] = -(to[8] = Math.sin (angle));
+        return to;
+    };
+
+    /**
+     *
+     * @param angle
+     */
+    _.rotateZ = function (angle) {
+        let to = _.identity ();
+        to[0] = to[5] = Math.cos (angle);
+        to[4] = -(to[1] = Math.sin (angle));
+        return to;
+    };
+
+    /**
+     *
+     * @param left
+     * @param right
+     * @param bottom
+     * @param top
+     * @param near
+     * @param far
+     * @param to
+     * @return {*}
+     */
+    let frustum = function (left, right, bottom, top, near, far, to) {
+        to = DEFAULT_FUNCTION(to, _.create);
+        let width = right - left, height = top - bottom, depth = far - near;
+        to[0] = (near * 2) / width; to[1] = 0; to[2] = 0; to[3] = 0;
+        to[4] = 0; to[5] = (near * 2) / height; to[6] = 0; to[7] = 0;
+        to[8] = (right + left) / width; to[9] = (top + bottom) / height; to[10] = -(far + near) / depth; to[11] = -1;
+        to[12] = 0; to[13] = 0; to[14] = (-2.0 * far * near) / depth; to[15] = 0;
+        return to;
+    };
+    _.frustum = frustum;
+
+    /**
+     *
+     * @param fov
+     * @param aspectRatio
+     * @param nearPlane
+     * @param farPlane
+     * @param to
+     */
+    _.perspective = function (fov, aspectRatio, nearPlane, farPlane, to) {
+        let halfWidth = nearPlane * Math.tan (Utility.degreesToRadians(fov * 0.5));
+        let halfHeight = halfWidth * aspectRatio;
+        return frustum (-halfHeight, halfHeight, -halfWidth, halfWidth, nearPlane, farPlane, to);
+    };
+
+    /**
+     *
+     * @param left
+     * @param right
+     * @param bottom
+     * @param top
+     * @param near
+     * @param far
+     * @param to
+     * @return {*}
+     */
+    _.orthographic = function (left, right, bottom, top, near, far, to) {
+        to = DEFAULT_FUNCTION(to, _.create);
+        let width = right - left, height = top - bottom, depth = far - near;
+        to[0] = 2 / width; to[1] = 0; to[2] = 0; to[3] = 0;
+        to[4] = 0; to[5] = 2 / height; to[6] = 0; to[7] = 0;
+        to[8] = 0; to[9] = 0; to[10] = -2 / depth; to[11] = 0;
+        to[12] = -(left + right) / width; to[13] = -(top + bottom) / height; to[14] = -(far + near) / depth; to[15] = 1;
+        return to;
+    };
+
+    /**
+     *
+     * @param xAxis
+     * @param yAxis
+     * @param zAxis
+     * @param from
+     * @return {FloatNxN|Object}
+     */
+    let viewMatrix = function (xAxis, yAxis, zAxis, from) {
+        let to = _.create ();
+        to[0] = xAxis[X]; to[1] = xAxis[Y]; to[2] = xAxis[Z]; to[3] = 0;
+        to[4] = yAxis[X]; to[5] = yAxis[Y]; to[6] = yAxis[Z]; to[7] = 0;
+        to[8] = zAxis[X]; to[9] = zAxis[Y]; to[10] = zAxis[Z]; to[11] = 0;
+        to[12] = from[X]; to[13] = from[Y]; to[14] = from[Z]; to[15] = 1;
+        return _.inverse (to);
+    };
+    _.viewMatrix = viewMatrix;
+
+    /**
+     *
+     * @param from
+     * @param along
+     * @param up
+     * @return {FloatNxN|Object}
+     */
+    let lookFrom = function (from, along, up) {
+        up = Float3.normalize (Utility.defaultValue (up, [0.0, 1.0, 0.0]));
+        let zAxis = Float3.normalize (along);
+        let xAxis = Float3.normalize (Float3.cross (up, zAxis));
+        let yAxis = Float3.normalize (Float3.cross (zAxis, xAxis));
+        return viewMatrix (xAxis, yAxis, zAxis, from);
+    };
+    _.lookFrom = lookFrom;
+
+    /**
+     *
+     * @param from
+     * @param at
+     * @param up
+     */
+    _.lookFromAt = function (from, at, up) {
+        return lookFrom (from, Float3.subtract (from, at), up);
+    };
+
+    /**
+     *
+     * @param size
+     * @param fov
+     * @param along
+     * @param at
+     * @param up
+     */
+    _.lookAt = function (size, fov, along, at, up) {
+        let distance = size / Math.tan (Utility.degreesToRadians (fov * 0.5));
+        let from = Float3.add (at, Float3.scale (along, distance / Float3.norm (along)));
+        return lookFrom (from, along, up);
+    };
+
+    /**
+     *
+     * @param zAxis
+     * @param up
+     * @return {FloatNxN|Object}
+     */
+    _.rotateZAxisTo = function (zAxis, up) {
+        up = Utility.defaultFunction(up, function () { return [0, 1, 0]; });
+        zAxis = Float3.normalize (zAxis);
+        let xAxis = Float3.normalize (Float3.cross (up, zAxis));
+        let yAxis = Float3.normalize (Float3.cross (zAxis, xAxis));
+        let to = _.create();
+        to[0] = xAxis[X]; to[1] = xAxis[Y]; to[2] = xAxis[Z]; to[3] = 0;
+        to[4] = yAxis[X]; to[5] = yAxis[Y]; to[6] = yAxis[Z]; to[7] = 0;
+        to[8] = zAxis[X]; to[9] = zAxis[Y]; to[10] = zAxis[Z]; to[11] = 0;
+        to[12] = 0; to[13] = 0; to[14] = 0; to[15] = 1;
+        return to;
+    };
+
+    /**
+     *
+     * @param n
+     * @param up
+     * @return {FloatNxN|Object}
+     */
+    _.rotateXAxisTo = function (xAxis, up) {
+        up = Utility.defaultFunction(up, function () { return [0, 1, 0]; });
+        xAxis = Float3.normalize (xAxis);
+        let zAxis = Float3.normalize (Float3.cross (xAxis, up));
+        let yAxis = Float3.normalize (Float3.cross (zAxis, xAxis));
+        let to = _.create();
+        to[0] = xAxis[X]; to[1] = xAxis[Y]; to[2] = xAxis[Z]; to[3] = 0;
+        to[4] = yAxis[X]; to[5] = yAxis[Y]; to[6] = yAxis[Z]; to[7] = 0;
+        to[8] = zAxis[X]; to[9] = zAxis[Y]; to[10] = zAxis[Z]; to[11] = 0;
+        to[12] = 0; to[13] = 0; to[14] = 0; to[15] = 1;
+        return to;
+    };
+
+    return _;
+} ();
