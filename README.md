@@ -1,7 +1,8 @@
 # webgl.js
 Javascript drawing in 3D 
 
-Deployed at: https://brettonw.github.io/webgl.js/.
+* Development deployed at: https://inboundresearch.github.io/WebGL 
+* Release deployed at: https://webgl.irdev.us/
 
 ![sample](src/main/webapp/img/sample.png)
 
