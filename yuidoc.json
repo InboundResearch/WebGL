@@ -1,12 +1,12 @@
 {
   "name": "WebGL",
-  "url": "webgl-render.azurewebsites.net",
+  "url": "webgl.irdev.us",
   "version": "1.0.0",
   "options": {
     "paths": "src/main/javascript",
     "outdir": "docs",
     "exclude": "",
-    "themedir": "/usr/local/lib/node_modules/yuidoc-lucid-theme",
-    "helpers": ["/usr/local/lib/node_modules/yuidoc-lucid-theme/helpers/helpers.js"]
+    "themedir": "/opt/homebrew/lib/node_modules/yuidoc-lucid-theme",
+    "helpers": ["/opt/homebrew/lib/node_modules/yuidoc-lucid-theme/helpers/helpers.js"]
   }
 }

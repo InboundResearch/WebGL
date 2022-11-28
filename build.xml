@@ -117,7 +117,7 @@
         </exec>
     </target>
 
-    <target name="js-minify" depends="js-document">
+    <target name="js-minify" depends="js-preprocess">
         <exec executable="uglifyjs">
             <arg value="${target-dir}/${preprocess-target}"/>
             <arg value="--mangle"/>
