@@ -14,7 +14,7 @@ export let Utility = function () {
 
     let unwind2 = _.unwind2 = function (value, base, cap) {
         let span = cap - base;
-        value -= absFloor (value / span) * cap;
+        value -= absFloor (value / span) * span;
         while (value >= cap) {
             value -= span;
         }
