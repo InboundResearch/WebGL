@@ -16,7 +16,7 @@
         return Shape.new ({
             buffers: function () {
                 // compute the steps we need to make to build the rotated shape
-                LOG (LogLevel.TRACE, "Make revolved outline");
+                LOG (LogLevel.TRACE, "Make revolved outline: " + name);
                 let builder = ShapeBuilder.new ();
                 let stepAngle = (-2.0 * Math.PI) / steps;
                 for (let i = 0; i < steps; ++i) {

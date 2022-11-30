@@ -1303,7 +1303,7 @@ export let WebGL2 = function () {
                 Hexahedron.make ();
                 Octahedron.make ();
                 Icosahedron.make ();
-                Square.make ();
+                makeSquare ();
                 Sphere.makeN (2);
                 Sphere.makeN (3);
                 Sphere.makeN (5);
@@ -2959,29 +2959,40 @@ export let WebGL2 = function () {
         };
         return _;
     }();
-    let Square = $.Square = function () {
-        let _ = Object.create(Primitive);
-        _.name = "square";
-        // override the make from builder to use buffers...
-        _.makeFromBuilder = function (name, builder) {
-            (name = (((typeof name !== "undefined") && (name != null)) ? name : this.name));
-            return Shape.new ({
-                buffers: function () {
-                    return builder.makeBuffers ();
+let makeFan = $.makeFan = function (name, outline, texture) {
+    // outline is an array of Float2 in XY, defining a closed, convex polygon (connecting the last vertex
+    // to the first) on the z = 0 plane. the normal is [0, 0, 1].
+    return Shape.new ({
+        buffers: function () {
+            LogLevel.say (LogLevel.TRACE, "Make fan: " + name);
+            let builder = ShapeBuilder.new ();
+            let normal = [0, 0, 1]
+            // add the vertices
+            for (let n = 0, last = outline.length; n < last; ++n) {
+                if (typeof texture !== "undefined") {
+                    builder.addVertexNormalTexture([outline[n][0], outline[n][1], 0], normal, texture[n]);
+                } else {
+                    builder.addVertexNormal([outline[n][0], outline[n][1], 0], normal);
                 }
-            }, name);
-        };
-        _.getShapeBuilder = function () {
-            let builder = ShapeBuilder.new();
-            builder.addVertexNormalTexture([ 1.0, 1.0, 0.0], [0.0, 0.0, 1.0], [1.0, 0.0]);
-            builder.addVertexNormalTexture([-1.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0]);
-            builder.addVertexNormalTexture([-1.0, -1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0]);
-            builder.addVertexNormalTexture([ 1.0, -1.0, 0.0], [0.0, 0.0, 1.0], [1.0, 1.0]);
-            builder.addFace([0, 1, 2, 0, 2, 3]);
-            return builder;
-        };
-        return _;
-    }();
+            }
+            // now aggregate the face indices
+            let indices = [];
+            for (let n = 1, last = outline.length - 1; n < last; ++n) {
+                indices.push (0);
+                indices.push (n);
+                indices.push (n + 1);
+            }
+            builder.addFace (indices);
+            return builder.makeBuffers ();
+        }
+    }, name);
+};
+let makeSquare = function () {
+    makeFan("square",
+        [ [ 1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [ 1.0, -1.0] ],
+        [ [1.0, 0.0], [0.0, 0.0], [0.0, 1.0], [1.0, 1.0] ]
+    );
+};
     let Sphere = $.Sphere = function () {
         let _ = Object.create (Primitive);
         _.name = "sphere";
@@ -3086,7 +3097,7 @@ export let WebGL2 = function () {
         return Shape.new ({
             buffers: function () {
                 // compute the steps we need to make to build the rotated shape
-                LogLevel.say (LogLevel.TRACE, "Make revolved outline");
+                LogLevel.say (LogLevel.TRACE, "Make revolved outline: " + name);
                 let builder = ShapeBuilder.new ();
                 let stepAngle = (-2.0 * Math.PI) / steps;
                 for (let i = 0; i < steps; ++i) {
@@ -3166,7 +3177,7 @@ export let WebGL2 = function () {
         return Shape.new ({
             buffers: function () {
                 // compute the steps we need to make to build the extruded shape
-                LogLevel.say (LogLevel.TRACE, "Make extruded outline");
+                LogLevel.say (LogLevel.TRACE, "Make extruded outline: " + name);
                 let builder = ShapeBuilder.new ();
                 let epsilon = 1.0e-6;
                 let halfLength = length / 2.0;

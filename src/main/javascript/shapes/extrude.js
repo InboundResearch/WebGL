@@ -11,7 +11,7 @@
         return Shape.new ({
             buffers: function () {
                 // compute the steps we need to make to build the extruded shape
-                LOG (LogLevel.TRACE, "Make extruded outline");
+                LOG (LogLevel.TRACE, "Make extruded outline: " + name);
                 let builder = ShapeBuilder.new ();
                 let epsilon = 1.0e-6;
                 let halfLength = length / 2.0;

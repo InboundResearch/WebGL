@@ -53,7 +53,7 @@
                 Hexahedron.make ();
                 Octahedron.make ();
                 Icosahedron.make ();
-                Square.make ();
+                makeSquare ();
                 Sphere.makeN (2);
                 Sphere.makeN (3);
                 Sphere.makeN (5);

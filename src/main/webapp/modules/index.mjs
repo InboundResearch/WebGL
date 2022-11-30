@@ -1,5 +1,5 @@
 // import all of wgl with a new instance...
-import {WebGL2, Utility, Float3, Float4x4} from "./webgl-debug.mjs";
+import {WebGL2, LogLevel, Utility, Float3, Float4x4} from "./webgl-debug.mjs";
 let wgl = WebGL2();
 Object.entries(wgl).forEach(([name, exported]) => window[name] = exported);
 
@@ -165,7 +165,7 @@ let buildScene = function () {
         }))
 
         .addChild (Node.new ({
-            transform: Float4x4.chain (Float4x4.rotateX (Math.PI / -2), Float4x4.translate ([0, 1.5, 3])),
+            transform: Float4x4.chain (Float4x4.scale ([1.0, 0.5, 1.0]), Float4x4.rotateX (0.5 * Math.PI / -2), Float4x4.translate ([0, 1.5, 3])),
             //transform: Float4x4.translate([-3, 1.5, 0]),
             state: function (standardUniforms) {
                 Program.get ("basic-texture").use ();
