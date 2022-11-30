@@ -8,9 +8,13 @@ export let Utility = function () {
 
     const TWO_PI = Math.PI * 2.0;
 
+    let absFloor = _.absFloor = function (value) {
+        return Math.floor (Math.abs(value)) * Math.sign(value);
+    };
+
     let unwind2 = _.unwind2 = function (value, base, cap) {
         let span = cap - base;
-        value -= Math.floor (value / span) * cap;
+        value -= absFloor (value / span) * cap;
         while (value >= cap) {
             value -= span;
         }
