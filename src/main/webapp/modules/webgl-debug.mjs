@@ -41,15 +41,19 @@ LogLevel.set (LogLevel.INFO);
 export let Utility = function () {
     let _ = Object.create (null);
     const TWO_PI = Math.PI * 2.0;
-    let unwind = _.unwind = function (value, cap) {
-        value -= Math.floor (value / cap) * cap;
+    let unwind2 = _.unwind2 = function (value, base, cap) {
+        let span = cap - base;
+        value -= Math.floor (value / span) * cap;
         while (value >= cap) {
-            value -= cap;
+            value -= span;
         }
-        while (value < 0) {
-            value += cap;
+        while (value < base) {
+            value += span;
         }
         return value;
+    };
+    let unwind = _.unwind = function (value, cap) {
+        return unwind2 (value, 0.0, cap);
     };
     _.unwindRadians = function (radians) {
         return _.unwind (radians, TWO_PI);
